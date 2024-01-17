@@ -8,6 +8,7 @@ int N_PIVOTS = 5;
 ArrayList<PVector> pivots = new ArrayList<>();
 PVector line;
 int currentPivotIndex = (int) random(N_PIVOTS);
+PVector slope;
 
 
 
@@ -22,6 +23,7 @@ void setup() {
 
 void draw(){
   background(0);
+  update();
   
   drawPivots();
   drawLine();
@@ -30,11 +32,32 @@ void draw(){
   fill(255);
 }
 
+void update(){
+  updateSlopeRotation();
+  if(nPointOfContact() > 1){
+     changePivot(); 
+  }
+  
+}
+
 void keyPressed() {
   if (keyCode == 82) { // R key
     totalRefresh();
   }
 }
+
+
+void changePivot(){
+  
+}
+
+// counts the number of points that the line touches. (Should be either 1 or 2)
+// to avoid misses, there should be a tolerance for the precision (making the points bigger)
+int nPointOfContact(){
+  
+   return 0; 
+}
+
 
 
 // points must not be aligned with other two points
@@ -63,11 +86,10 @@ void refreshPivots(){
 }
 
 void drawLine(){
-  PVector newSlope = updatedSlope();
   PVector p = pivots.get(currentPivotIndex);
   
-  float sx = (newSlope.x * 1000) + p.x, sy = (newSlope.y * 1000) + p.y;
-  float ex = (-newSlope.x * 1000) + p.x, ey = (-newSlope.y * 1000) + p.y;
+  float sx = (slope.x * 1000) + p.x, sy = (slope.y * 1000) + p.y;
+  float ex = (-slope.x * 1000) + p.x, ey = (-slope.y * 1000) + p.y;
   line(sx, sy, ex, ey);
 }
 
@@ -78,10 +100,9 @@ void drawPivots(){
    }
 }
 
-PVector updatedSlope(){
+void updateSlopeRotation(){
    currRotation += SPEED_OF_ROTATION;
    PVector rot = new PVector(line.x, line.y);
    rot.rotate(currRotation);
-   
-   return rot;
+   slope = rot;   
 }
