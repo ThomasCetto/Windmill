@@ -5,10 +5,13 @@ float currRotation = random(2 * PI);
 float SPEED_OF_ROTATION = 0.005;
 float PIVOT_RADIUS = 5;
 int N_PIVOTS = 5;
+float CONTACT_THRESHOLD = SPEED_OF_ROTATION * 1.5;
 ArrayList<PVector> pivots = new ArrayList<>();
 PVector line;
 int currentPivotIndex = (int) random(N_PIVOTS);
+int previousPivotIndex = -1;
 PVector slope;
+
 
 
 
@@ -34,9 +37,7 @@ void draw(){
 
 void update(){
   updateSlopeRotation();
-  if(nPointOfContact() > 1){
-     changePivot(); 
-  }
+  changePivotIfNeeded();
   
 }
 
@@ -47,15 +48,20 @@ void keyPressed() {
 }
 
 
-void changePivot(){
-  
-}
+void changePivotIfNeeded(){
+  for(int i=0; i<pivots.size(); i++){
+    if(i != currentPivotIndex && i != previousPivotIndex && pointIsOnTheLine(pivots.get(i))){
+      previousPivotIndex = currentPivotIndex; 
+      currentPivotIndex = i;
+      return;
+    }
+  }
+}  
 
-// counts the number of points that the line touches. (Should be either 1 or 2)
-// to avoid misses, there should be a tolerance for the precision (making the points bigger)
-int nPointOfContact(){
-  
-   return 0; 
+
+boolean pointIsOnTheLine(PVector p){  
+  PVector slopeBetweenPoints = PVector.sub(p, pivots.get(currentPivotIndex));
+  return PVector.angleBetween(slope, slopeBetweenPoints) <= CONTACT_THRESHOLD;
 }
 
 
